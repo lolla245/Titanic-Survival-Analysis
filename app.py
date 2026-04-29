@@ -1,25 +1,32 @@
-import streamlit as st
+from flask import Flask, render_template, request
 import numpy as np
 import pickle
 
+app = Flask(__name__)
+
 model = pickle.load(open("model.pkl", "rb"))
 
-st.title("🚢 Titanic Survival Predictor")
+@app.route("/")
+def home():
+    return render_template("index.html")
 
-pclass = st.selectbox("Passenger Class", [1,2,3])
-sex = st.selectbox("Sex", ["male","female"])
-age = st.slider("Age", 1, 80, 25)
-fare = st.slider("Fare", 0, 500, 50)
-family = st.slider("Family Size", 1, 10, 1)
+@app.route("/predict", methods=["POST"])
+def predict():
+    pclass = int(request.form["pclass"])
+    sex = 0 if request.form["sex"] == "male" else 1
+    age = int(request.form["age"])
+    fare = int(request.form["fare"])
+    family = int(request.form["family"])
 
-sex = 0 if sex == "male" else 1
-
-input_data = np.array([[pclass, sex, age, fare, family]])
-
-if st.button("Predict Survival"):
+    input_data = np.array([[pclass, sex, age, fare, family]])
     result = model.predict(input_data)
 
     if result[0] == 1:
-        st.success("🎉 Survived!")
+        msg = "🎉 Survived!"
     else:
-        st.error("💀 Did Not Survive")
+        msg = "💀 Did Not Survive"
+
+    return render_template("index.html", prediction=msg)
+
+if __name__ == "__main__":
+    app.run(debug=True)
