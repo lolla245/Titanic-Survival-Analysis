@@ -1,44 +1,334 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Titanic Survival Predictor</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #0d1b2a;
+    --deep: #1a2e44;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --cream: #f5ede0;
+    --rust: #8b2e2e;
+    --mist: rgba(201,168,76,0.12);
+  }
+
+  body {
+    font-family: 'Crimson Pro', Georgia, serif;
+    background: var(--navy);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Ocean wave background */
+  body::before {
+    content: '';
+    position: fixed;
+    bottom: -60px;
+    left: -10%;
+    width: 120%;
+    height: 220px;
+    background: radial-gradient(ellipse at 50% 80%, #0a3a5c 0%, transparent 70%);
+    animation: wave 8s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image:
+      radial-gradient(1px 1px at 20% 15%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 75% 8%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 45% 25%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 85% 30%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 10% 40%, rgba(255,255,255,0.3) 0%, transparent 100%);
+    pointer-events: none;
+  }
+
+  @keyframes wave {
+    0%, 100% { transform: translateY(0) scaleX(1); }
+    50% { transform: translateY(-12px) scaleX(1.02); }
+  }
+
+  .card {
+    background: linear-gradient(160deg, var(--deep) 0%, #0f2035 100%);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 4px;
+    width: 100%;
+    max-width: 420px;
+    padding: 44px 40px 40px;
+    position: relative;
+    box-shadow:
+      0 0 0 1px rgba(201,168,76,0.08),
+      0 30px 80px rgba(0,0,0,0.6),
+      inset 0 1px 0 rgba(201,168,76,0.15);
+    animation: emerge 0.9s cubic-bezier(0.22,1,0.36,1) both;
+  }
+
+  @keyframes emerge {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Corner ornaments */
+  .card::before, .card::after {
+    content: '';
+    position: absolute;
+    width: 18px; height: 18px;
+    border-color: var(--gold);
+    border-style: solid;
+    opacity: 0.6;
+  }
+  .card::before { top: 12px; left: 12px; border-width: 1px 0 0 1px; }
+  .card::after  { bottom: 12px; right: 12px; border-width: 0 1px 1px 0; }
+
+  .header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+
+  .ship-icon {
+    font-size: 28px;
+    margin-bottom: 10px;
+    display: block;
+    filter: drop-shadow(0 0 8px rgba(201,168,76,0.4));
+  }
+
+  .title {
+    font-family: 'Playfair Display', serif;
+    color: var(--gold);
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+  }
+
+  .subtitle {
+    color: rgba(245,237,224,0.45);
+    font-size: 13px;
+    margin-top: 6px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 300;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0 30px;
+    opacity: 0.4;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold));
+  }
+  .divider::after { background: linear-gradient(90deg, var(--gold), transparent); }
+  .divider-dot { width: 4px; height: 4px; background: var(--gold); border-radius: 50%; }
+
+  .field-group {
+    margin-bottom: 18px;
+    animation: fadeUp 0.6s both;
+  }
+  .field-group:nth-child(1) { animation-delay: 0.1s; }
+  .field-group:nth-child(2) { animation-delay: 0.18s; }
+  .field-group:nth-child(3) { animation-delay: 0.26s; }
+  .field-group:nth-child(4) { animation-delay: 0.34s; }
+  .field-group:nth-child(5) { animation-delay: 0.42s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  label {
+    display: block;
+    color: var(--gold-light);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 7px;
+    font-family: 'Crimson Pro', serif;
+    font-weight: 400;
+  }
+
+  input, select {
+    width: 100%;
+    padding: 11px 14px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 3px;
+    color: var(--cream);
+    font-family: 'Crimson Pro', serif;
+    font-size: 16px;
+    font-weight: 300;
+    outline: none;
+    transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  input::placeholder { color: rgba(245,237,224,0.25); font-style: italic; }
+
+  input:focus, select:focus {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.06);
+    box-shadow: 0 0 0 3px rgba(201,168,76,0.1);
+  }
+
+  .select-wrap {
+    position: relative;
+  }
+  .select-wrap::after {
+    content: '▾';
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gold);
+    pointer-events: none;
+    font-size: 14px;
+  }
+
+  select option { background: var(--deep); color: var(--cream); }
+
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .submit-btn {
+    width: 100%;
+    margin-top: 28px;
+    padding: 14px;
+    background: linear-gradient(135deg, #b8862e 0%, var(--gold) 50%, #b8862e 100%);
+    background-size: 200% 100%;
+    color: var(--navy);
+    border: none;
+    border-radius: 3px;
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: background-position 0.4s, transform 0.15s, box-shadow 0.3s;
+    box-shadow: 0 4px 20px rgba(201,168,76,0.25);
+    animation: fadeUp 0.6s 0.5s both;
+  }
+
+  .submit-btn:hover {
+    background-position: 100% 0;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 28px rgba(201,168,76,0.4);
+  }
+
+  .submit-btn:active { transform: translateY(0); }
+
+  .result {
+    margin-top: 22px;
+    padding: 14px 18px;
+    border-radius: 3px;
+    text-align: center;
+    font-size: 17px;
+    font-style: italic;
+    letter-spacing: 0.02em;
+    display: none;
+    animation: fadeUp 0.4s both;
+  }
+
+  .result.survived {
+    display: block;
+    background: rgba(40,100,60,0.25);
+    border: 1px solid rgba(60,160,90,0.35);
+    color: #7dd4a0;
+  }
+
+  .result.perished {
+    display: block;
+    background: rgba(139,46,46,0.2);
+    border: 1px solid rgba(180,60,60,0.3);
+    color: #e09090;
+  }
+
+  .result-placeholder {
+    margin-top: 22px;
+    text-align: center;
+    color: rgba(245,237,224,0.2);
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-style: italic;
+    animation: fadeUp 0.6s 0.55s both;
+  }
+</style>
 </head>
 <body>
-    <h1>🚢 Titanic Survival Predictor</h1>
 
-    <form action="/predict" method="post">
-        <label>Passenger Class:</label>
-        <select name="pclass">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
+<div class="card">
+  <div class="header">
+    <span class="ship-icon">🚢</span>
+    <div class="title">Titanic Survival Predictor</div>
+    <div class="subtitle">R.M.S. Titanic · April 15, 1912</div>
+  </div>
+
+  <div class="divider"><span class="divider-dot"></span></div>
+
+  <form action="/predict" method="post">
+
+    <div class="field-group">
+      <label>Passenger Class</label>
+      <div class="select-wrap">
+        <select name="Pclass" required>
+          <option value="" disabled selected>Select class</option>
+          <option value="1">1st Class — First</option>
+          <option value="2">2nd Class — Second</option>
+          <option value="3">3rd Class — Third</option>
         </select>
-        <br><br>
+      </div>
+    </div>
 
-        <label>Sex:</label>
-        <select name="sex">
-            <option value="male">Male</option>
-            <option value="female">Female</option>
+    <div class="field-group">
+      <label>Sex</label>
+      <div class="select-wrap">
+        <select name="Sex">
+          <option value="0">Male</option>
+          <option value="1">Female</option>
         </select>
-        <br><br>
+      </div>
+    </div>
 
-        <label>Age:</label>
-        <input type="number" name="age" min="1" max="80" value="25">
-        <br><br>
+    <div class="row">
+      <div class="field-group">
+        <label>Age</label>
+        <input type="number" step="any" name="Age" placeholder="e.g. 29" required min="0" max="120">
+      </div>
+      <div class="field-group">
+        <label>Fare (£)</label>
+        <input type="number" step="any" name="Fare" placeholder="e.g. 72.50" required min="0">
+      </div>
+    </div>
 
-        <label>Fare:</label>
-        <input type="number" name="fare" min="0" max="500" value="50">
-        <br><br>
+    <div class="field-group">
+      <label>Family Size Aboard</label>
+      <input type="number" name="FamilySize" placeholder="Siblings, spouses, parents & children" required min="0">
+    </div>
 
-        <label>Family Size:</label>
-        <input type="number" name="family" min="1" max="10" value="1">
-        <br><br>
+    <button type="submit" class="submit-btn">Predict Survival</button>
+  </form>
 
-        <button type="submit">Predict Survival</button>
-    </form>
+  <div class="result-placeholder">— awaiting passenger details —</div>
+</div>
 
-    {% if prediction %}
-        <h2>{{ prediction }}</h2>
-    {% endif %}
 </body>
 </html>
