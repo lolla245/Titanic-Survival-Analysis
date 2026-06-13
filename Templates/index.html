@@ -284,12 +284,12 @@
 
   <div class="divider"><span class="divider-dot"></span></div>
 
-  <form action="/predict" method="post">
+<form action="/predict" method="post">
 
     <div class="field-group">
       <label>Passenger Class</label>
       <div class="select-wrap">
-        <select name="Pclass" required>
+        <select name="pclass" required>
           <option value="" disabled selected>Select class</option>
           <option value="1">1st Class — First</option>
           <option value="2">2nd Class — Second</option>
@@ -301,9 +301,9 @@
     <div class="field-group">
       <label>Sex</label>
       <div class="select-wrap">
-        <select name="Sex">
-          <option value="0">Male</option>
-          <option value="1">Female</option>
+        <select name="sex" required>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
         </select>
       </div>
     </div>
@@ -311,24 +311,42 @@
     <div class="row">
       <div class="field-group">
         <label>Age</label>
-        <input type="number" step="any" name="Age" placeholder="e.g. 29" required min="0" max="120">
+        <input type="number" step="any" name="age"
+               placeholder="e.g. 29"
+               required min="0" max="120">
       </div>
+
       <div class="field-group">
         <label>Fare (£)</label>
-        <input type="number" step="any" name="Fare" placeholder="e.g. 72.50" required min="0">
+        <input type="number" step="any" name="fare"
+               placeholder="e.g. 72.50"
+               required min="0">
       </div>
     </div>
 
     <div class="field-group">
       <label>Family Size Aboard</label>
-      <input type="number" name="FamilySize" placeholder="Siblings, spouses, parents & children" required min="0">
+      <input type="number"
+             name="family"
+             placeholder="Siblings, spouses, parents & children"
+             required min="0">
     </div>
 
-    <button type="submit" class="submit-btn">Predict Survival</button>
-  </form>
+    <button type="submit" class="submit-btn">
+      Predict Survival
+    </button>
 
-  <div class="result-placeholder">— awaiting passenger details —</div>
-</div>
+</form>
+
+{% if prediction %}
+  <div class="result {% if 'Survived' in prediction %}survived{% else %}perished{% endif %}">
+      {{ prediction }}
+  </div>
+{% else %}
+  <div class="result-placeholder">
+      — awaiting passenger details —
+  </div>
+{% endif %}
 
 </body>
 </html>
