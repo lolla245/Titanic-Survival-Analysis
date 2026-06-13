@@ -50,4 +50,6 @@ def predict():
         return render_template("index.html", prediction=f"Error: {str(e)}")
 
 if __name__ == "__main__":
-    app.run(debug=True, use_reloader=False)
+    import os
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
